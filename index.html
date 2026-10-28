@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easing Studio BD - CSS easing playground</title>
+<meta name="description" content="Offline bilingual CSS easing playground: preset easings, draggable cubic-bezier curve editor, live animation preview, easing race, and saved easings.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>Easing Studio BD</h1>
+    <p class="tagline" data-i18n="tagline">Design CSS easings, see them move, and race them.</p>
+  </div>
+  <button id="langBtn" type="button" class="lang-btn">&#2476;&#2494;&#2434;&#2482;&#2494;</button>
+</header>
+
+<main>
+  <section class="card">
+    <h2 data-i18n="presetsH">Preset easings</h2>
+    <div id="presetGrid" class="preset-grid"></div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="curveH">Bezier curve editor</h2>
+    <p class="muted" data-i18n="curveHint">Drag the two handles, or type numbers. x stays in 0-1.</p>
+    <div class="editor-wrap">
+      <svg id="curveSvg" viewBox="0 0 300 300" role="img" aria-label="Bezier curve editor">
+        <line x1="20" y1="220.9" x2="280" y2="220.9" class="grid" />
+        <line x1="20" y1="161.8" x2="280" y2="161.8" class="grid" />
+        <line x1="20" y1="102.7" x2="280" y2="102.7" class="grid" />
+        <line x1="20" y1="43.6" x2="280" y2="43.6" class="grid" />
+        <line x1="85" y1="20" x2="85" y2="280" class="grid" />
+        <line x1="150" y1="20" x2="150" y2="280" class="grid" />
+        <line x1="215" y1="20" x2="215" y2="280" class="grid" />
+        <line x1="20" y1="20" x2="20" y2="280" class="axis" />
+        <line x1="20" y1="280" x2="280" y2="280" class="axis" />
+        <line id="line1" x1="20" y1="220.9" x2="85" y2="200" class="handle-line" />
+        <line id="line2" x1="280" y1="102.7" x2="85" y2="102.7" class="handle-line" />
+        <path id="curvePath" d="" class="curve" />
+        <circle id="handle1" cx="85" cy="200" r="11" class="handle" />
+        <circle id="handle2" cx="85" cy="102.7" r="11" class="handle" />
+      </svg>
+      <div class="bezier-inputs">
+        <label>P1 x <input id="inX1" type="number" step="0.01" min="0" max="1" value="0.25"></label>
+        <label>P1 y <input id="inY1" type="number" step="0.01" min="-2" max="2" value="0.1"></label>
+        <label>P2 x <input id="inX2" type="number" step="0.01" min="0" max="1" value="0.25"></label>
+        <label>P2 y <input id="inY2" type="number" step="0.01" min="-2" max="2" value="1"></label>
+      </div>
+    </div>
+    <div class="css-box">
+      <span data-i18n="cssLabel">CSS easing</span>:
+      <code id="cssOutput">cubic-bezier(0.25, 0.1, 0.25, 1)</code>
+      <span id="currentName" class="muted">Ease</span>
+    </div>
+    <div class="row">
+      <button id="copyBtn" type="button" data-i18n="copyBtn">Copy CSS</button>
+      <button id="resetBtn" type="button" data-i18n="resetBtn">Reset to ease</button>
+      <span id="copyMsg" class="muted" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="previewH">Live preview</h2>
+    <div class="row">
+      <label><span data-i18n="propertyLabel">Animated property</span>
+        <select id="propSelect">
+          <option value="slide">Slide</option>
+          <option value="scale">Scale</option>
+          <option value="fade">Fade</option>
+          <option value="spin">Spin</option>
+        </select>
+      </label>
+      <label><span data-i18n="durationLabel">Duration (seconds)</span>
+        <input id="durRange" type="range" min="0.3" max="5" step="0.1" value="1.5">
+        <span id="durVal">1.5</span>s
+      </label>
+    </div>
+    <div class="track"><div id="previewDot" class="dot"></div></div>
+    <div class="row">
+      <button id="playBtn" type="button" data-i18n="playBtn">Play animation</button>
+      <span id="previewStatus" class="muted" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="raceH">Easing race</h2>
+    <p class="muted" data-i18n="raceHint">Lane A uses your current easing. Pick a rival for lane B.</p>
+    <div class="row">
+      <label>Lane B rival <select id="raceB"></select></label>
+      <button id="raceBtn" type="button" data-i18n="raceBtn">Start race</button>
+    </div>
+    <div class="track race-track"><span class="lane-label">A</span><div id="raceDotA" class="dot dot-a"></div></div>
+    <div class="track race-track"><span class="lane-label">B</span><div id="raceDotB" class="dot dot-b"></div></div>
+    <p><span id="raceLeader" class="muted" aria-live="polite"></span></p>
+    <p id="raceResult" aria-live="polite"></p>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="savedH">My saved easings</h2>
+    <div class="row">
+      <label>Name <input id="saveName" type="text" maxlength="40" placeholder="e.g. my-soft-ease"></label>
+      <button id="saveBtn" type="button" data-i18n="saveBtn">Save current easing</button>
+    </div>
+    <div id="savedList"></div>
+    <div class="row">
+      <button id="exportBtn" type="button" data-i18n="exportBtn">Export JSON</button>
+      <label class="file-label"><span data-i18n="importBtn">Import JSON</span>
+        <input id="importFile" type="file" accept=".json,application/json">
+      </label>
+    </div>
+    <div class="row">
+      <label>Erase <input id="eraseInput" type="text" placeholder="DELETE"></label>
+      <button id="eraseBtn" type="button" data-i18n="eraseBtn">Erase all saved</button>
+    </div>
+    <p id="dataMsg" class="muted" aria-live="polite"></p>
+  </section>
+</main>
+
+<footer class="muted">
+  <p>100% offline: no network requests, no accounts, no tracking. Your easings stay in this browser (localStorage). Bezier y values outside 0-1 create overshoot effects; CSS clamps x to 0-1. Steps presets have no bezier curve, so the editor hides the curve while they are active.</p>
+</footer>
+
+<script src="js/logic.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
